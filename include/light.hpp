@@ -1,5 +1,5 @@
-#ifndef LIGHT_H
-#define LIGHT_H
+#ifndef LIGHT_HPP
+#define LIGHT_HPP
 
 #include <glm/glm.hpp>
 #include <tuple>

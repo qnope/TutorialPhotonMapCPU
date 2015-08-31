@@ -1,5 +1,5 @@
-#ifndef RAYTRACER_H
-#define RAYTRACER_H
+#ifndef RAYTRACER_HPP
+#define RAYTRACER_HPP
 
 #include "light.hpp"
 #include "world.hpp"
