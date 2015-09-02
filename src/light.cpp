@@ -27,7 +27,7 @@ vec3 SpotLight::getIrradiance(const vec3 &position, const vec3 &normal) {
     vec3 posToLight = mPosition - position;
     vec3 posToLightNormalized = normalize(posToLight);
 
-    if(dot(-normalize(posToLight), mDirection) > mCosCutoff) {
+    if(dot(-posToLightNormalized, mDirection) > mCosCutoff) {
         float solidAngle = - 2.f * M_PI * (mCosCutoff - 1);
 
         return lambertCosineLaw(posToLightNormalized, normal) * mTotalFlux /
