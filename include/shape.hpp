@@ -3,14 +3,32 @@
 
 #include "ray.hpp"
 #include "material.hpp"
+
+/**
+ * @brief      This class provides an interface to manage differents shape
+ */
 class AbstractShape {
 public:
     AbstractShape() = default;
     AbstractShape(std::unique_ptr<AbstractMaterial> &&material);
 
+    /**
+     * @brief      Return the distance between shape and ray emetter   
+     *
+     * @param      ray     
+     *
+     * @return     Negative value if not found. Distance between object and ray emetter
+     */
     virtual float intersect(Ray const &ray) const = 0;
     virtual glm::vec3 getNormal(glm::vec3 const &position) const = 0;
 
+    /**
+     * @brief      Return the radiance returned by the material owned 
+     *
+     * @param      ray  
+     *
+     * @return     radiance
+     */
     glm::vec3 getReflectedRadiance(Ray const &ray);
 
     virtual ~AbstractShape() = default;
