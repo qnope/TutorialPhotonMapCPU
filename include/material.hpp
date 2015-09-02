@@ -5,15 +5,36 @@
 
 class AbstractShape;
 
+/**
+ * @brief      This class describes a material
+ */
 class AbstractMaterial {
 public:
     AbstractMaterial(float albedo);
+
+    /**
+     * @brief      Get the reflected radiance
+     *
+     * @param      ray    
+     * @param      shape  Useful to get normal, UV for texture???
+     *
+     * @return     { description_of_the_return_value }
+     */
     virtual glm::vec3 getReflectedRadiance(Ray const &ray, AbstractShape const &shape) = 0;
 
     virtual ~AbstractMaterial() = default;
 
     float albedo;
 protected:
+    /**
+     * @brief      Get the Bidirectionnal Reflectance Distribution Function
+     *
+     * @param      ingoing   
+     * @param      outgoing  
+     * @param      normal    
+     *
+     * @return     the brdf
+     */
     virtual float brdf(glm::vec3 const &ingoing, glm::vec3 const &outgoing, glm::vec3 const &normal) = 0;
 };
 
