@@ -4,10 +4,21 @@
 #include <glm/glm.hpp>
 #include <tuple>
 
+/**
+ * @brief      Interface for a light
+ */
 class AbstractLight {
 public:
     AbstractLight(glm::vec3 const &flux);
 
+    /**
+     * @brief      Compute irradiance receive by the projected area in position
+     *
+     * @param      position  surface's position
+     * @param      normal    surface's normal
+     *
+     * @return     irradiance
+     */
     virtual glm::vec3 getIrradiance(glm::vec3 const &position, glm::vec3 const &normal) = 0;
 
     virtual ~AbstractLight() = default;
