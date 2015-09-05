@@ -9,7 +9,7 @@ int main() {
     try {
         Device device(640, 480);
 
-        RayTracer rt(&device);
+        RayTracer rt(&device, 32);
 
         auto floor = rt.make_shape<Plane>(vec4(0.0, 1.0, 0.0, 0.0), make_unique<UniformLambertianMaterial>(vec3(1.0, 1.0, 1.0), 1.0)); // On ajoute un plan
         auto top = rt.make_shape<Plane>(vec4(0.0, -1.0, 0.0, 12.0), make_unique<UniformLambertianMaterial>(vec3(1.0, 1.0, 1.0), 1.0)); // On ajoute un plan

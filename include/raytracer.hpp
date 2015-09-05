@@ -3,12 +3,11 @@
 
 #include "light.hpp"
 #include "world.hpp"
-
-#define NUM_THREADS 8 
+#include "system/threadpool.hpp"
 
 class RayTracer {
 public:
-    RayTracer(Device *device);
+    RayTracer(Device *device, std::size_t numThreads);
 
     template<typename T, typename ...Args>
     std::shared_ptr<T> make_shape(Args &&...args) {
@@ -31,8 +30,10 @@ public:
 
 private:
     Device *mDevice;
+    ThreadPool mThreadPool;
     std::shared_ptr<AbstractCamera> mCamera;
-    void renderThread(int yStart, int yEnd);
+    void renderThread(int y);
+    std::atomic<std::size_t> mPixelsWrite;
 };
 
 #endif // RAYTRACER_H

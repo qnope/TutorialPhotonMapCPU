@@ -29,4 +29,5 @@ HEADERS += \
     include/raytracer.hpp \
     include/shapestorage.hpp \
     include/world.hpp \
-    include/light.hpp
+    include/light.hpp \
+    include/system/threadpool.hpp
