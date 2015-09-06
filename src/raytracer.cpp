@@ -14,12 +14,7 @@ void RayTracer::renderThread(int y) {
     for(auto x(0); x < mDevice->width(); ++x) {
         Ray rayFromCamera(*mCamera, x, mDevice->height() - y, mDevice->width(), mDevice->height());
 
-        auto nearest = World::world.findNearest(rayFromCamera);
-
-        if(get<0>(nearest) != nullptr) {
-            rayFromCamera.distMax = get<1>(nearest);
-            mDevice->writePixel(x, y, get<0>(nearest)->getReflectedRadiance(rayFromCamera));
-        }
+        mDevice->writePixel(x, y, getRadianceFromNearest(rayFromCamera));
     }
 
     mPixelsWrite++;
@@ -27,6 +22,7 @@ void RayTracer::renderThread(int y) {
 
 void RayTracer::render() {
     mPixelsWrite = 0;
+
     for(auto y(0); y < mDevice->height(); ++y)
         mThreadPool.addTask(std::bind(&RayTracer::renderThread, this, y));
 

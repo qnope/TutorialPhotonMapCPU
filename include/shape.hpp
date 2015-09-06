@@ -31,6 +31,8 @@ public:
      */
     glm::vec3 getReflectedRadiance(Ray const &ray);
 
+    void bouncePhoton(Photon const &photon);
+
     virtual ~AbstractShape() = default;
 
 private:

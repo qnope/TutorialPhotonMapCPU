@@ -1,4 +1,6 @@
 #include "include/light.hpp"
+#include "photonmap.hpp"
+#include "world.hpp"
 
 using namespace glm;
 
@@ -19,6 +21,17 @@ vec3 PointLight::getIrradiance(const vec3 &position, vec3 const &normal) {
             (4.f * (float)M_PI * dot(posToLight, posToLight));
 }
 
+void PointLight::emitPhotons(std::size_t number) {
+    Photon photon;
+
+    photon.flux = mTotalFlux / (float)number;
+    photon.position = mPosition;
+
+    for(auto i(0u); i < number; ++i) {
+        photon.direction = Random::random.getSphereDirection();
+        tracePhoton(photon);
+    }
+}
 
 SpotLight::SpotLight(const vec3 &position, const vec3 &direction, float cosCutoff, const vec3 &flux) :
     AbstractLight(flux), mPosition(position), mDirection(normalize(direction)), mCosCutoff(cosCutoff) {}
@@ -35,4 +48,22 @@ vec3 SpotLight::getIrradiance(const vec3 &position, const vec3 &normal) {
     }
 
     return vec3();
+}
+
+void SpotLight::emitPhotons(std::size_t number) {
+    Photon photon;
+
+    photon.flux = mTotalFlux / (float)number;
+    photon.position = mPosition;
+
+    for(auto i(0u); i < number; ++i) {
+        vec3 directionPhoton;
+        do
+            directionPhoton = Random::random.getSphereDirection();
+        while(dot(directionPhoton, mDirection) < mCosCutoff);
+
+
+        photon.direction = directionPhoton;
+        tracePhoton(photon);
+    }
 }

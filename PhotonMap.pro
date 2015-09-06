@@ -18,7 +18,8 @@ SOURCES += src/main.cpp \
     src/raytracer.cpp \
     src/shapestorage.cpp \
     src/light.cpp \
-    src/world.cpp
+    src/world.cpp \
+    src/photonmap.cpp
 
 HEADERS += \
     include/system/device.hpp \
@@ -30,4 +31,6 @@ HEADERS += \
     include/shapestorage.hpp \
     include/world.hpp \
     include/light.hpp \
-    include/system/threadpool.hpp
+    include/system/threadpool.hpp \
+    include/photonmap.hpp \
+    include/random.hpp

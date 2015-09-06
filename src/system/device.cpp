@@ -42,9 +42,9 @@ void Device::writePixel(unsigned x, unsigned y, unsigned color) {
 }
 
 void Device::writePixel(unsigned x, unsigned y, glm::vec3 const &color) {
-    unsigned r = min(1.0f, color.r) * 255;
-    unsigned g = min(1.0f, color.g) * 255;
-    unsigned b = min(1.0f, color.b) * 255;
+    unsigned r = max(0.0f, min(1.0f, color.r)) * 255;
+    unsigned g = max(0.0f, min(1.0f, color.g)) * 255;
+    unsigned b = max(0.0f, min(1.0f, color.b)) * 255;
 
     mPixels[y][x] = (r << 16) + (g << 8) + b;
 }

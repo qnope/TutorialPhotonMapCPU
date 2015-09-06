@@ -2,6 +2,7 @@
 #define MATERIAL_HPP
 
 #include "ray.hpp"
+#include "photonmap.hpp"
 
 class AbstractShape;
 
@@ -21,6 +22,8 @@ public:
      * @return     { description_of_the_return_value }
      */
     virtual glm::vec3 getReflectedRadiance(Ray const &ray, AbstractShape const &shape) = 0;
+
+    virtual void bouncePhoton(Photon const &photon, AbstractShape const &shape) = 0;
 
     virtual ~AbstractMaterial() = default;
 
@@ -42,8 +45,6 @@ class LambertianMaterial : public AbstractMaterial {
 public :
     LambertianMaterial(float albedo);
 
-    virtual glm::vec3 getReflectedRadiance(Ray const &ray, AbstractShape const &shape) = 0;
-
     virtual ~LambertianMaterial() = default;
 
 protected:
@@ -56,6 +57,7 @@ public :
     UniformLambertianMaterial(glm::vec3 const &colour, float albedo = 0.8);
 
     glm::vec3 getReflectedRadiance(Ray const &ray, AbstractShape const &shape);
+    void bouncePhoton(Photon const &photon, AbstractShape const &shape);
 
 public:
     glm::vec3 color;
@@ -66,6 +68,7 @@ public:
     MirrorMaterial(float albedo);
 
     glm::vec3 getReflectedRadiance(const Ray &ray, const AbstractShape &shape);
+    void bouncePhoton(Photon const &photon, AbstractShape const &shape);
 
 protected:
     float brdf(const glm::vec3 &, const glm::vec3 &, const glm::vec3 &);
@@ -76,6 +79,7 @@ public:
     TransmitterMaterial(float albedo, float index);
 
     glm::vec3 getReflectedRadiance(const Ray &ray, const AbstractShape &shape);
+    void bouncePhoton(Photon const &photon, AbstractShape const &shape);
 
 public:
     float index;

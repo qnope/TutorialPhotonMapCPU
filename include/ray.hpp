@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include "camera.hpp"
 
-#define RAY_EPSILON 0.001f
+#define RAY_EPSILON 0.01f
 
 #define MAX_BOUNCES 3
 
@@ -32,26 +32,29 @@ public:
     unsigned recursionDeep = 0;
 };
 
+inline glm::vec3 getReflectedDir(glm::vec3 const &incoming, glm::vec3 const &normal) {
+    return glm::reflect(incoming, normal);
+}
+
+inline glm::vec3 getRefractedDir(glm::vec3 const &incoming, glm::vec3 const &normal, float index) {
+    if(glm::dot(incoming, normal) < 0.f)
+        return glm::refract(incoming, normal, 1.f / index);
+
+    else
+        return glm::refract(incoming, -normal, index);
+}
+
 inline Ray getReflectedRay(Ray const &ray, glm::vec3 const &normal) {
-    glm::vec3 position = ray.origin + ray.direction * ray.distMax;
-    Ray reflectedRay(position, reflect(ray.direction, normal));
-    reflectedRay.origin += RAY_EPSILON * reflectedRay.direction;
+    Ray reflectedRay(ray.origin, getReflectedDir(ray.direction, normal));
     reflectedRay.recursionDeep = ray.recursionDeep + 1;
+    reflectedRay.origin += RAY_EPSILON * reflectedRay.direction;
     return reflectedRay;
 }
 
 inline Ray getRefractedRay(Ray const &ray, glm::vec3 const &normal, float index) {
-    glm::vec3 position = ray.origin + ray.direction * ray.distMax;
-    Ray refractedRay;
-
-    if(glm::dot(ray.direction, normal) < 0.f)
-        refractedRay = Ray(position, glm::refract(ray.direction, normal, 1.0f / index));
-
-    else
-        refractedRay = Ray(position, glm::refract(ray.direction, -normal, index));
-
-    refractedRay.origin += RAY_EPSILON * refractedRay.direction;
+    Ray refractedRay(ray.origin, getRefractedDir(ray.direction, normal, index));
     refractedRay.recursionDeep = ray.recursionDeep + 1;
+    refractedRay.origin += RAY_EPSILON * refractedRay.direction;
     return refractedRay;
 }
 

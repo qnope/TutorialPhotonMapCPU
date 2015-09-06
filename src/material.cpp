@@ -5,9 +5,7 @@
 using namespace glm;
 using namespace std;
 
-vec3 getIrradianceFromDirectLighting(Ray const &ray, AbstractShape const &shape) {
-    vec3 position = ray.origin + ray.direction * ray.distMax;
-    vec3 normal = shape.getNormal(position);
+vec3 getIrradianceFromDirectLighting(vec3 position, vec3 normal) {
     vec3 irradiance;
 
     for(auto &light : World::world.lights)
@@ -30,10 +28,24 @@ UniformLambertianMaterial::UniformLambertianMaterial(const vec3 &color, float al
     LambertianMaterial(albedo), color(color) {}
 
 vec3 UniformLambertianMaterial::getReflectedRadiance(Ray const &ray, AbstractShape const &shape) {
-    vec3 directLighting = getIrradianceFromDirectLighting(ray, shape);
+    vec3 directLighting = getIrradianceFromDirectLighting(ray.origin, shape.getNormal(ray.origin));
     float f = brdf(vec3(), vec3(), vec3());
 
-    return color * f * (directLighting);
+    return color * f * (directLighting + World::world.gatherIrradiance(ray.origin, shape.getNormal(ray.origin), 0.5f));
+}
+
+void UniformLambertianMaterial::bouncePhoton(const Photon &_photon, const AbstractShape &shape) {
+    Photon photon = _photon;
+
+    if(photon.recursionDeep > 0)
+        World::world.addPhoton(_photon);
+
+    if(++photon.recursionDeep > MAX_BOUNCES)
+        return;
+
+    photon.flux *= color * brdf(vec3(), vec3(), vec3());
+    photon.direction = Random::random.getHemisphereDirection(shape.getNormal(photon.position));
+    tracePhoton(photon);
 }
 
 MirrorMaterial::MirrorMaterial(float albedo) :
@@ -47,16 +59,23 @@ vec3 MirrorMaterial::getReflectedRadiance(const Ray &ray, const AbstractShape &s
     if(ray.recursionDeep >= MAX_BOUNCES)
         return vec3();
 
-    Ray reflectedRay = getReflectedRay(ray, shape.getNormal(ray.origin + ray.direction * ray.distMax));
+    Ray reflectedRay = getReflectedRay(ray, shape.getNormal(ray.origin));
 
-    auto nearest = World::world.findNearest(reflectedRay);
+    return brdf(vec3(), vec3(), vec3()) * getRadianceFromNearest(reflectedRay);
+}
 
-    if(get<0>(nearest) != nullptr) {
-        reflectedRay.distMax = get<1>(nearest);
-        return brdf(vec3(), vec3(), vec3()) * get<0>(nearest)->getReflectedRadiance(reflectedRay);
-    }
+void MirrorMaterial::bouncePhoton(const Photon &_photon, const AbstractShape &shape) {
+    Photon photon = _photon;
 
-    return vec3();
+    if(++photon.recursionDeep > MAX_BOUNCES)
+        return;
+
+    if(photon.recursionDeep == 1)
+        traceShadowPhoton(photon);
+
+    photon.flux *= brdf(vec3(), vec3(), vec3());
+    photon.direction = getReflectedDir(photon.direction, shape.getNormal(photon.position));
+    tracePhoton(photon);
 }
 
 TransmitterMaterial::TransmitterMaterial(float albedo, float index) :
@@ -70,14 +89,21 @@ vec3 TransmitterMaterial::getReflectedRadiance(const Ray &ray, const AbstractSha
     if(ray.recursionDeep >= MAX_BOUNCES)
         return vec3();
 
-    Ray refractedRay = getRefractedRay(ray, shape.getNormal(ray.origin + ray.direction * ray.distMax), index);
+    Ray refractedRay = getRefractedRay(ray, shape.getNormal(ray.origin), index);
 
-    auto nearest = World::world.findNearest(refractedRay);
+    return brdf(vec3(), vec3(), vec3()) * getRadianceFromNearest(refractedRay);
+}
 
-    if(get<0>(nearest) != nullptr) {
-        refractedRay.distMax = get<1>(nearest);
-        return brdf(vec3(), vec3(), vec3()) * get<0>(nearest)->getReflectedRadiance(refractedRay);
-    }
+void TransmitterMaterial::bouncePhoton(const Photon &_photon, const AbstractShape &shape) {
+    Photon photon = _photon;
 
-    return vec3();
+    if(++photon.recursionDeep > MAX_BOUNCES)
+        return;
+
+    if(photon.recursionDeep == 1)
+        traceShadowPhoton(photon);
+
+    photon.flux *= brdf(vec3(), vec3(), vec3());
+    photon.direction = getRefractedDir(photon.direction, shape.getNormal(photon.position), index);
+    tracePhoton(photon);
 }

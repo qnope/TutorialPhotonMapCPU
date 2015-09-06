@@ -10,6 +10,10 @@ vec3 AbstractShape::getReflectedRadiance(const Ray &ray) {
     return mMaterial->getReflectedRadiance(ray, *this);
 }
 
+void AbstractShape::bouncePhoton(const Photon &photon) {
+   mMaterial->bouncePhoton(photon, *this);
+}
+
 Sphere::Sphere(const vec3 &position, float radius) :
     AbstractShape(), mPosition(position), mRadius(radius) {}
 

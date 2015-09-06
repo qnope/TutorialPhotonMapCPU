@@ -33,7 +33,7 @@ private:
     ThreadPool mThreadPool;
     std::shared_ptr<AbstractCamera> mCamera;
     void renderThread(int y);
-    std::atomic<std::size_t> mPixelsWrite;
+    std::atomic<int> mPixelsWrite;
 };
 
 #endif // RAYTRACER_H

@@ -21,6 +21,8 @@ public:
      */
     virtual glm::vec3 getIrradiance(glm::vec3 const &position, glm::vec3 const &normal) = 0;
 
+    virtual void emitPhotons(std::size_t number) = 0;
+
     virtual ~AbstractLight() = default;
 
 protected:
@@ -33,6 +35,8 @@ public:
 
     glm::vec3 getIrradiance(glm::vec3 const &position, glm::vec3 const &normal);
 
+    void emitPhotons(std::size_t number);
+
 private:
     glm::vec3 mPosition;
 };
@@ -42,6 +46,8 @@ public:
     SpotLight(glm::vec3 const &position, glm::vec3 const &direction, float cosCutoff, glm::vec3 const &flux);
 
     glm::vec3 getIrradiance(const glm::vec3 &position, const glm::vec3 &normal);
+
+    void emitPhotons(std::size_t number);
 
 private:
     glm::vec3 mPosition;
