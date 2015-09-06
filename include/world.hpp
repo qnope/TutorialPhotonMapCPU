@@ -44,6 +44,10 @@ public:
 
     std::vector<std::shared_ptr<AbstractLight>> lights;
 
+    void setPhotonmap(std::unique_ptr<AbstractPhotonMap> &&photonMap) {
+        mPhotonMap = std::move(photonMap);
+    }
+
     static World world;
 
 private:

@@ -16,7 +16,7 @@ int main() {
         auto left = rt.make_shape<Plane>(vec4(-1.0, 0.0, 0.0, 3.0), make_unique<UniformLambertianMaterial>(vec3(.0, .0, 1.0), 1.0)); // On ajoute un plan
         auto right = rt.make_shape<Plane>(vec4(1.0, 0.0, 0.0, 3.0), make_unique<UniformLambertianMaterial>(vec3(.0, 1.0, .0), 1.0)); // On ajoute un plan
         auto front = rt.make_shape<Plane>(vec4(0.0, .0, -1.0, 3.0), make_unique<UniformLambertianMaterial>(vec3(1.0, 1.0, 1.0), 1.0)); // On ajoute un plan
-        auto back = rt.make_shape<Plane>(vec4(0.0, .0, 1.0, 100.0), make_unique<UniformLambertianMaterial>(vec3(.0, .0, 1.0), 1.0)); // On ajoute un plan
+        auto back = rt.make_shape<Plane>(vec4(0.0, .0, 1.0, 7.0), make_unique<UniformLambertianMaterial>(vec3(.0, .0, 1.0), 1.0)); // On ajoute un plan
 
         auto sphere1 = rt.make_shape<Sphere>(vec3(-.5, 1.0, -1.), 1.0f, make_unique<TransmitterMaterial>(1.f, 2.45f)); // On ajoute une sphère
         auto sphere2 = rt.make_shape<Sphere>(vec3(1.0, 1.0, 2.0), 1.0f, make_unique<MirrorMaterial>(1.f)); // On ajoute une sphère
@@ -25,7 +25,9 @@ int main() {
 
         auto light = rt.make_light<SpotLight>(vec3(0.0, 3.0, 0.0), vec3(0.0, -1.0, .0), cosf(radians(90.f)), vec3(100, 100, 100));
 
-        light->emitPhotons(50'000);
+        World::world.setPhotonmap(make_unique<RegularPhotonMap>(32, AABB{-5., -5., -5., 5, 5, 5}));
+
+        light->emitPhotons(1'000'000);
 
         while(device.run()) {
             device.begin();
